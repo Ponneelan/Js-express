@@ -13,7 +13,7 @@ app.use(cors());
 app.use(cors({
     origin: '*',
     allowedHeaders: 'Authorization',
-    methods: ['GET', 'POST']
+    methods: ['GET', 'POST','PUT']
 }));
 
 
@@ -37,7 +37,7 @@ app.get('/getall', (req, res) => {
             result = { message: 'error' }
             console.log('error ' + error);
         } else {
-            console.log('result is ' + JSON.stringify(result));
+            // console.log('result is ' + JSON.stringify(result));
         }
         res.end(JSON.stringify(result));
     });
@@ -48,12 +48,13 @@ app.get('/getUser/:id', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
     let sql = `select id, name, email, summary ,message from PortfolioMessage where id = ?`;
-    conncetion.query(sql, [req.params.id], (error, result) => {
+    const {id} = req.params;
+    conncetion.query(sql, [id], (error, result) => {
         if (error) {
             result = { message: 'error' }
             console.log('error ' + error);
         } else {
-            console.log('result is ' + JSON.stringify(result));
+            // console.log('result is ' + JSON.stringify(result));
         }
         res.end(JSON.stringify(result));
     });
@@ -66,13 +67,13 @@ app.post('/insert', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:5500');
 
     let sql = `INSERT INTO PortfolioMessage (name,email,summary,message,updated_by,created_by) VALUES(?,?,?,?,?,?)`;
-    console.log("body.......", req.body);
-    conncetion.query(sql, [req.body.name, req.body.email, req.body.summary, req.body.message, req.body.name, req.body.name], (error, result) => {
+    const {name, email, summary, message} = req.body;
+    conncetion.query(sql, [name, email, summary, message, name, name], (error, result) => {
         if (error) {
             console.log("error " + error);
             res.end(JSON.stringify({ Message: "error" }));
         } else {
-            console.log("Result " + JSON.stringify(result));
+            // console.log("Result " + JSON.stringify(result));
             res.end(JSON.stringify(result));
         }
     })
@@ -81,14 +82,16 @@ app.post('/insert', (req, res) => {
 app.put('/update', (req, res) => {
     res.set('Content-Type', 'application/json');
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:5500');
 
-    let sql = `update PortfolioMessage set name = ? where id = ?`;
-    conncetion.query(sql, [req.body.name, req.body.id], (error, result) => {
+    let sql = `update PortfolioMessage set name = ?, email = ? ,summary = ?, message = ? where id = ?`;
+    const {name,email,summary,message,id} = req.body;
+    conncetion.query(sql, [name,email, summary, message ,id], (error, result) => {
         if (error) {
             console.log("error " + error);
             res.end(JSON.stringify({ Message: "error" }));
         } else {
-            console.log("Result " + JSON.stringify(result));
+            // console.log("Result " + JSON.stringify(result));
             res.end(JSON.stringify(result));
         }
 
@@ -101,13 +104,13 @@ app.put('/delete', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:5500');
 
     let sql = `update PortfolioMessage set isDeleted = ? where id = ?`;
-    let id = req.body.id;
+    let {id} = req.body;
     conncetion.query(sql, [1, id], (error, result) => {
         if (error) {
             console.log("error " + error);
             res.end(JSON.stringify({ Message: "error" }));
         } else {
-            console.log("Result " + JSON.stringify(result));
+            // console.log("Result " + JSON.stringify(result));
             res.end(JSON.stringify(result));
         }
     });
